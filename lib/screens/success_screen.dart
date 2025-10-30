@@ -5,8 +5,15 @@ import 'package:confetti/confetti.dart';
 
 class SuccessScreen extends StatefulWidget {
   final String userName;
+  final String selectedAvatar;
+  final List<String> badges;
 
-  const SuccessScreen({super.key, required this.userName});
+  const SuccessScreen({
+    super.key,
+    required this.userName,
+    required this.selectedAvatar,
+    required this.badges,
+  });
 
   @override
   State<SuccessScreen> createState() => _SuccessScreenState();
@@ -48,6 +55,8 @@ class _SuccessScreenState extends State<SuccessScreen> {
                 Colors.blue,
                 Colors.green,
                 Colors.orange,
+                Colors.pink,
+                Colors.yellow,
               ],
             ),
           ),
@@ -59,28 +68,37 @@ class _SuccessScreenState extends State<SuccessScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Celebration Icon
-                  AnimatedContainer(
-                    duration: const Duration(seconds: 1),
+                  // Selected Avatar Display with animation
+                  TweenAnimationBuilder(
+                    tween: Tween<double>(begin: 0, end: 1),
+                    duration: const Duration(milliseconds: 800),
                     curve: Curves.elasticOut,
-                    width: 150,
-                    height: 150,
-                    decoration: BoxDecoration(
-                      color: Colors.deepPurple,
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.deepPurple.withOpacity(0.5),
-                          blurRadius: 20,
-                          spreadRadius: 5,
+                    builder: (context, double value, child) {
+                      return Transform.scale(
+                        scale: value,
+                        child: Container(
+                          width: 150,
+                          height: 150,
+                          decoration: BoxDecoration(
+                            color: Colors.deepPurple,
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.deepPurple.withOpacity(0.5),
+                                blurRadius: 20,
+                                spreadRadius: 5,
+                              ),
+                            ],
+                          ),
+                          child: Center(
+                            child: Text(
+                              widget.selectedAvatar,
+                              style: const TextStyle(fontSize: 80),
+                            ),
+                          ),
                         ),
-                      ],
-                    ),
-                    child: const Icon(
-                      Icons.celebration,
-                      color: Colors.white,
-                      size: 80,
-                    ),
+                      );
+                    },
                   ),
                   const SizedBox(height: 40),
 
@@ -107,7 +125,12 @@ class _SuccessScreenState extends State<SuccessScreen> {
                     style: TextStyle(fontSize: 18, color: Colors.grey),
                   ),
 
-                  const SizedBox(height: 50),
+                  const SizedBox(height: 30),
+
+                  // Achievement Badges Display
+                  if (widget.badges.isNotEmpty) _buildBadgesSection(),
+
+                  const SizedBox(height: 30),
 
                   // Continue Button
                   ElevatedButton(
@@ -123,7 +146,7 @@ class _SuccessScreenState extends State<SuccessScreen> {
                       ),
                     ),
                     child: const Text(
-                      'More Celebration!',
+                      'More Celebration! 🎊',
                       style: TextStyle(fontSize: 16, color: Colors.white),
                     ),
                   ),
@@ -131,6 +154,83 @@ class _SuccessScreenState extends State<SuccessScreen> {
               ),
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  // Achievement Badges Section
+  Widget _buildBadgesSection() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(15),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.3),
+            blurRadius: 10,
+            spreadRadius: 2,
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          const Text(
+            'Achievement Badges Unlocked! 🏆',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.deepPurple,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 15),
+          ...widget.badges.map((badge) {
+            return TweenAnimationBuilder(
+              tween: Tween<double>(begin: 0, end: 1),
+              duration: const Duration(milliseconds: 600),
+              curve: Curves.bounceOut,
+              builder: (context, double value, child) {
+                return Transform.scale(
+                  scale: value,
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(vertical: 5),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Colors.deepPurple[100]!,
+                          Colors.purple[100]!,
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Colors.deepPurple,
+                        width: 2,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          badge,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.deepPurple,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            );
+          }).toList(),
         ],
       ),
     );
